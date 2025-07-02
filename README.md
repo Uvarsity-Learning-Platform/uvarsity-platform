@@ -42,11 +42,11 @@ This organization contains multiple repos for different aspects of the platform:
 
 | Repo | Purpose |
 |------|---------|
-| [`uvarsity-platform`](https://github.com/uvarsity/uvarsity-platform) | Main frontend code (React + Tailwind) |
-| [`uvarsity-api`](https://github.com/uvarsity/uvarsity-api) | Backend API (Node.js, NestJS, PostgreSQL) |
-| [`uvarsity-docs`](https://github.com/uvarsity/uvarsity-docs) | Documentation for contributors, developers, and mentors |
-| [`uvarsity-design`](https://github.com/uvarsity/uvarsity-design) | Figma files, logos, brand assets |
-| [`uvarsity-community`](https://github.com/uvarsity/uvarsity-community) | Mentor/student onboarding, event planning, social media |
+| [`uvarsity-platform`](https://github.com/Uvarsity-Learning-Platform/uvarsity-platform) | Main frontend code (React + Tailwind) |
+| [`uvarsity-api`](https://github.com/Uvarsity-Learning-Platform/uvarsity-api) | Backend API (Node.js, NestJS, PostgreSQL) |
+| [`uvarsity-docs`](https://github.com/Uvarsity-Learning-Platform/uvarsity-docs) | Documentation for contributors, developers, and mentors |
+| [`uvarsity-design`](https://github.com/Uvarsity-Learning-Platform/uvarsity-design) | Figma files, logos, brand assets |
+| [`uvarsity-community`](https://github.com/Uvarsity-Learning-Platform/uvarsity-community) | Mentor/student onboarding, event planning, social media |
 
 ---
 
