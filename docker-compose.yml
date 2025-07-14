@@ -1,0 +1,167 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: uvarsity-postgres
+    environment:
+      POSTGRES_DB: uvarsity
+      POSTGRES_USER: uvarsity_user
+      POSTGRES_PASSWORD: uvarsity_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - uvarsity-network
+
+  # Redis for caching and message queues
+  redis:
+    image: redis:7-alpine
+    container_name: uvarsity-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - uvarsity-network
+
+  # Authentication Service
+  auth-service:
+    build:
+      context: .
+      dockerfile: services/auth/Dockerfile
+    container_name: uvarsity-auth
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=uvarsity
+      - DB_USER=uvarsity_user
+      - DB_PASSWORD=uvarsity_password
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=your-super-secret-jwt-key
+      - JWT_EXPIRES_IN=1h
+    ports:
+      - "3001:3000"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - uvarsity-network
+    volumes:
+      - ./services/auth:/app
+      - /app/node_modules
+
+  # User Management Service
+  user-service:
+    build:
+      context: .
+      dockerfile: services/user/Dockerfile
+    container_name: uvarsity-user
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=uvarsity
+      - DB_USER=uvarsity_user
+      - DB_PASSWORD=uvarsity_password
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    ports:
+      - "3002:3000"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - uvarsity-network
+    volumes:
+      - ./services/user:/app
+      - /app/node_modules
+
+  # Course Management Service
+  course-service:
+    build:
+      context: .
+      dockerfile: services/course/Dockerfile
+    container_name: uvarsity-course
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=uvarsity
+      - DB_USER=uvarsity_user
+      - DB_PASSWORD=uvarsity_password
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    ports:
+      - "3003:3000"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - uvarsity-network
+    volumes:
+      - ./services/course:/app
+      - /app/node_modules
+
+  # Payment Service
+  payment-service:
+    build:
+      context: .
+      dockerfile: services/payment/Dockerfile
+    container_name: uvarsity-payment
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=uvarsity
+      - DB_USER=uvarsity_user
+      - DB_PASSWORD=uvarsity_password
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - MPESA_CONSUMER_KEY=your-mpesa-key
+      - MPESA_CONSUMER_SECRET=your-mpesa-secret
+    ports:
+      - "3004:3000"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - uvarsity-network
+    volumes:
+      - ./services/payment:/app
+      - /app/node_modules
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
+    container_name: uvarsity-gateway
+    environment:
+      - NODE_ENV=development
+      - AUTH_SERVICE_URL=http://auth-service:3000
+      - USER_SERVICE_URL=http://user-service:3000
+      - COURSE_SERVICE_URL=http://course-service:3000
+      - PAYMENT_SERVICE_URL=http://payment-service:3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - auth-service
+      - user-service
+      - course-service
+      - payment-service
+    networks:
+      - uvarsity-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  uvarsity-network:
+    driver: bridge
