@@ -4,8 +4,9 @@
   "description": "Backend microservices for Uvarsity Learning Platform",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
+    "start": "node dist/main.js",
+    "dev": "nodemon --exec ts-node src/main.ts",
+    "build": "tsc",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint .",
